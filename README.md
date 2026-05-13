@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # FarmFresh Direct — Production-Ready System
 
 A full-stack, D2C milk delivery system featuring a Mobile App (Expo), Admin Dashboard (React/Vite), and a Robust Backend (Node.js/Express/MongoDB).
@@ -67,3 +68,7 @@ If VS Code shows a high error count (e.g., 100+):
 2.  Search for **"TypeScript: Restart TS Server"** and run it.
 3.  Ensure `node_modules` is installed in the `mobile-app` directory.
 4.  The system has been updated to use `.ts` for core libraries and `.tsx` for screens to ensure type safety.
+=======
+# FarmFresh
+App for FarmFresh
+>>>>>>> 167ebf25f80a070588ec3faab810b03a88311b40
