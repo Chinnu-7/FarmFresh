@@ -1,0 +1,411 @@
+openapi: 3.0.0
+info:
+  title: FarmFresh Direct API
+  description: |
+    Complete API documentation for the FarmFresh Direct D2C milk delivery platform.
+    - OTP-based authentication with JWT tokens
+    - Product catalog with subscription support
+    - Daily inventory management with priority allocation
+    - Order lifecycle tracking
+    - Admin analytics and demand prediction
+  version: 1.0.0
+  contact:
+    name: FarmFresh Direct
+
+servers:
+  - url: http://localhost:5000/api
+    description: Local development
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+tags:
+  - name: Auth
+  - name: Products
+  - name: Subscriptions
+  - name: Orders
+  - name: Inventory
+  - name: Admin
+
+paths:
+  # ─── AUTH ──────────────────────────────────
+  /auth/send-otp:
+    post:
+      tags: [Auth]
+      summary: Send OTP to mobile number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone:
+                  type: string
+                  example: "8888888888"
+      responses:
+        '200':
+          description: OTP sent
+
+  /auth/verify-otp:
+    post:
+      tags: [Auth]
+      summary: Verify OTP and get JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, otp]
+              properties:
+                phone:
+                  type: string
+                  example: "8888888888"
+                otp:
+                  type: string
+                  example: "123456"
+      responses:
+        '200':
+          description: Login successful, returns JWT token
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user profile
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: User profile
+    put:
+      tags: [Auth]
+      summary: Update user profile
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Updated profile
+
+  # ─── PRODUCTS ──────────────────────────────
+  /products:
+    get:
+      tags: [Products]
+      summary: Get all active products
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [milk, mushroom]
+      responses:
+        '200':
+          description: List of products
+    post:
+      tags: [Products]
+      summary: Create product (Admin)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, type, unit, price]
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                  enum: [milk, mushroom]
+                unit:
+                  type: string
+                price:
+                  type: number
+                volumeInLiters:
+                  type: number
+                isSubscriptionAllowed:
+                  type: boolean
+      responses:
+        '201':
+          description: Product created
+
+  # ─── SUBSCRIPTIONS ────────────────────────
+  /subscriptions:
+    post:
+      tags: [Subscriptions]
+      summary: Create a subscription
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productId, quantityPerDay]
+              properties:
+                productId:
+                  type: string
+                quantityPerDay:
+                  type: integer
+                deliverySlot:
+                  type: string
+      responses:
+        '201':
+          description: Subscription created
+
+  /subscriptions/me:
+    get:
+      tags: [Subscriptions]
+      summary: Get my subscriptions
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: List of user subscriptions
+
+  /subscriptions/{id}/status:
+    put:
+      tags: [Subscriptions]
+      summary: Pause / Resume / Cancel subscription
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [active, paused, cancelled]
+      responses:
+        '200':
+          description: Subscription updated
+
+  /subscriptions/{id}/skip:
+    put:
+      tags: [Subscriptions]
+      summary: Skip specific delivery dates
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dates:
+                  type: array
+                  items:
+                    type: string
+                    format: date
+      responses:
+        '200':
+          description: Skip dates added
+
+  # ─── ORDERS ────────────────────────────────
+  /orders:
+    post:
+      tags: [Orders]
+      summary: Place an instant order
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items, paymentMethod, address]
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      product:
+                        type: string
+                      quantity:
+                        type: integer
+                paymentMethod:
+                  type: string
+                  enum: [cod, razorpay, wallet]
+                address:
+                  type: object
+                  properties:
+                    street:
+                      type: string
+                    city:
+                      type: string
+                    state:
+                      type: string
+                    zipCode:
+                      type: string
+      responses:
+        '201':
+          description: Order placed
+
+  /orders/me:
+    get:
+      tags: [Orders]
+      summary: Get my orders
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: User's order history
+
+  /orders/{id}/status:
+    put:
+      tags: [Orders]
+      summary: Update order status (Admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [placed, packed, out_for_delivery, delivered, cancelled]
+      responses:
+        '200':
+          description: Order status updated
+
+  # ─── INVENTORY ─────────────────────────────
+  /inventory/today:
+    get:
+      tags: [Inventory]
+      summary: Get today's inventory status
+      responses:
+        '200':
+          description: Today's inventory
+    put:
+      tags: [Inventory]
+      summary: Update daily procurement (Admin)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                totalMilkProcuredLiters:
+                  type: number
+                totalMushroomPackets:
+                  type: number
+                wastageLiters:
+                  type: number
+      responses:
+        '200':
+          description: Inventory updated
+
+  /inventory/allocate:
+    post:
+      tags: [Inventory]
+      summary: Trigger subscription allocation (Admin)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Allocation completed
+
+  /inventory/history:
+    get:
+      tags: [Inventory]
+      summary: Get inventory history (Admin)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: Historical inventory data
+
+  # ─── ADMIN ────────────────────────────────
+  /admin/stats:
+    get:
+      tags: [Admin]
+      summary: Dashboard statistics
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Dashboard stats
+
+  /admin/orders:
+    get:
+      tags: [Admin]
+      summary: Get all orders (paginated)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: All orders
+
+  /admin/subscriptions:
+    get:
+      tags: [Admin]
+      summary: Get all subscriptions
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: All subscriptions
+
+  /admin/users:
+    get:
+      tags: [Admin]
+      summary: Get all users
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: All users
+
+  /admin/demand-prediction:
+    get:
+      tags: [Admin]
+      summary: Demand prediction (7-day moving average)
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Predicted demand data
