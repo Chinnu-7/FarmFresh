@@ -46,6 +46,8 @@ export default function InventoryPage() {
   };
 
   const handleAllocate = async () => {
+    setLoading(true);
+    setMessage('');
     try {
       const res = await client.post('/inventory/allocate');
       setMessage('✅ ' + res.data.message);
@@ -53,6 +55,8 @@ export default function InventoryPage() {
       setTimeout(() => setMessage(''), 4000);
     } catch (err) {
       setMessage('❌ ' + (err.response?.data?.message || 'Allocation failed'));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -127,8 +131,8 @@ export default function InventoryPage() {
             Recalculate how much milk is reserved for active subscriptions today
           </p>
         </div>
-        <button className="btn btn-outline" onClick={handleAllocate}>
-          Run Allocation
+        <button className="btn btn-outline" onClick={handleAllocate} disabled={loading}>
+          {loading ? 'Running...' : 'Run Allocation'}
         </button>
       </div>
 
