@@ -87,18 +87,26 @@ exports.createOrder = async (req, res, next) => {
     }
 
     if (requiredMushroomPackets > 0) {
-      const availableMushrooms = inventory.totalMushroomPackets - inventory.soldMushroomPackets;
-      if (requiredMushroomPackets > availableMushrooms) {
+      const updated = await DailyInventory.findOneAndUpdate(
+        {
+          date: today,
+          $expr: {
+            $gte: [
+              { $subtract: ["$totalMushroomPackets", "$soldMushroomPackets"] },
+              requiredMushroomPackets
+            ]
+          }
+        },
+        { $inc: { soldMushroomPackets: requiredMushroomPackets } },
+        { new: true }
+      );
+
+      if (!updated) {
         return res.status(400).json({
           success: false,
-          message: 'Not enough mushrooms available.',
-          availablePackets: availableMushrooms,
+          message: 'Not enough mushrooms available. Sold out for today!',
         });
       }
-      await DailyInventory.findOneAndUpdate(
-        { date: today },
-        { $inc: { soldMushroomPackets: requiredMushroomPackets } }
-      );
     }
 
     // Create order

@@ -33,6 +33,9 @@ export default function DashboardLayout() {
           <NavLink to="/users">
             <span className="icon">👥</span> Users
           </NavLink>
+          <NavLink to="/products">
+            <span className="icon">🛒</span> Products
+          </NavLink>
         </nav>
 
         <div className="sidebar-logout">

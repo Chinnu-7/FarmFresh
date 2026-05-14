@@ -1,7 +1,7 @@
 const Subscription = require('../models/Subscription');
 const Product = require('../models/Product');
 const DailyInventory = require('../models/DailyInventory');
-const { startOfDay } = require('date-fns');
+const { startOfDay, addDays } = require('date-fns');
 
 /**
  * @desc    Create a subscription
@@ -47,10 +47,10 @@ exports.createSubscription = async (req, res, next) => {
       deliveryAddress: deliveryAddress || (req.user.addresses.find(a => a.isDefault) || req.user.addresses[0]),
     });
 
-    // Update today's inventory allocation
-    const today = startOfDay(new Date());
+    // Update tomorrow's inventory allocation (Subscriptions start from next day)
+    const tomorrow = startOfDay(addDays(new Date(), 1));
     await DailyInventory.findOneAndUpdate(
-      { date: today },
+      { date: tomorrow },
       { $inc: { allocatedToSubscriptionsLiters: volumePerDayLiters } },
       { upsert: true, new: true }
     );

@@ -61,4 +61,6 @@ dailyInventorySchema.pre('save', function (next) {
 
 
 
+dailyInventorySchema.index({ date: 1 });
+
 module.exports = mongoose.model('DailyInventory', dailyInventorySchema);

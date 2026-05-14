@@ -6,6 +6,7 @@ import InventoryPage from './pages/InventoryPage';
 import OrdersPage from './pages/OrdersPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import UsersPage from './pages/UsersPage';
+import ProductsPage from './pages/ProductsPage';
 import './index.css';
 
 function ProtectedRoute({ children }) {
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="orders" element={<OrdersPage />} />
           <Route path="subscriptions" element={<SubscriptionsPage />} />
           <Route path="users" element={<UsersPage />} />
+          <Route path="products" element={<ProductsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

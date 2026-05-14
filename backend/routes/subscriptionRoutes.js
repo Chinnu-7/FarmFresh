@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   createSubscription,
   getMySubscriptions,
+  updateSubscription,
   updateSubscriptionStatus,
   skipDates,
 } = require('../controllers/subscriptionController');
