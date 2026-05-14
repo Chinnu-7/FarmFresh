@@ -166,3 +166,50 @@ exports.skipDates = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @desc    Update subscription (quantity, slot, etc.)
+ * @route   PUT /api/subscriptions/:id
+ * @access  Private
+ */
+exports.updateSubscription = async (req, res, next) => {
+  try {
+    const { quantityPerDay, deliverySlot, deliveryAddress } = req.body;
+    const subscription = await Subscription.findById(req.params.id).populate('product');
+
+    if (!subscription) {
+      return res.status(404).json({ success: false, message: 'Subscription not found' });
+    }
+    if (subscription.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    // If quantity changed, adjust inventory allocation
+    if (quantityPerDay !== undefined && quantityPerDay !== subscription.quantityPerDay) {
+      const product = subscription.product;
+      const oldVolume = subscription.volumePerDayLiters;
+      const newVolume = quantityPerDay * product.volumeInLiters;
+      const diff = newVolume - oldVolume;
+
+      if (subscription.status === 'active') {
+        const today = startOfDay(new Date());
+        await DailyInventory.findOneAndUpdate(
+          { date: today },
+          { $inc: { allocatedToSubscriptionsLiters: diff } },
+          { upsert: true }
+        );
+      }
+
+      subscription.quantityPerDay = quantityPerDay;
+      subscription.volumePerDayLiters = newVolume;
+    }
+
+    if (deliverySlot) subscription.deliverySlot = deliverySlot;
+    if (deliveryAddress) subscription.deliveryAddress = deliveryAddress;
+
+    await subscription.save();
+    res.json({ success: true, data: subscription });
+  } catch (error) {
+    next(error);
+  }
+};

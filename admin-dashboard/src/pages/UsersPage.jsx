@@ -11,6 +11,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState('');
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
@@ -32,6 +33,15 @@ export default function UsersPage() {
     fetchUsers();
   }, [filter]);
 
+  const filteredUsers = users.filter((u) => {
+    const s = search.toLowerCase();
+    return (
+      (u.name?.toLowerCase() || '').includes(s) ||
+      (u.phone || '').includes(s) ||
+      (u.email?.toLowerCase() || '').includes(s)
+    );
+  });
+
   return (
     <div>
       <div className="page-header">
@@ -39,8 +49,18 @@ export default function UsersPage() {
         <p>{total} registered users</p>
       </div>
 
-      <div className="filter-bar">
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+      <div className="filter-bar" style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1, position: 'relative' }}>
+          <input
+            type="text"
+            placeholder="Search by name, phone or email..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ width: '100%', paddingLeft: 36 }}
+          />
+          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }}>🔍</span>
+        </div>
+        <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ width: 200 }}>
           <option value="">All Roles</option>
           <option value="customer">Customers</option>
           <option value="admin">Admins</option>
@@ -67,7 +87,7 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user._id}>
                   <td style={{ fontWeight: 600 }}>{user.name || '—'}</td>
                   <td>{user.phone}</td>

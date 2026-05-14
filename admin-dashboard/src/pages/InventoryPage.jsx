@@ -92,6 +92,7 @@ export default function InventoryPage() {
                 type="number"
                 value={form.totalMilkProcuredLiters}
                 onChange={(e) => setForm({ ...form, totalMilkProcuredLiters: e.target.value })}
+                onFocus={(e) => e.target.select()}
                 min="0"
                 step="0.5"
                 required
@@ -103,6 +104,7 @@ export default function InventoryPage() {
                 type="number"
                 value={form.totalMushroomPackets}
                 onChange={(e) => setForm({ ...form, totalMushroomPackets: e.target.value })}
+                onFocus={(e) => e.target.select()}
                 min="0"
               />
             </div>
@@ -112,6 +114,7 @@ export default function InventoryPage() {
                 type="number"
                 value={form.wastageLiters}
                 onChange={(e) => setForm({ ...form, wastageLiters: e.target.value })}
+                onFocus={(e) => e.target.select()}
                 min="0"
                 step="0.1"
               />
