@@ -11,7 +11,7 @@ import SettingsPage from './pages/SettingsPage';
 import './index.css';
 
 function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('ff_admin_token');
+  const token = localStorage.getItem('pd_admin_token');
   if (!token) return <Navigate to="/login" replace />;
   return children;
 }

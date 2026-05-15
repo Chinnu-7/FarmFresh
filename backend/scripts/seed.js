@@ -10,7 +10,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const products = [
   {
-    name: 'Farm Fresh Buffalo Milk',
+    name: 'PureDudh Buffalo Milk',
     description: 'Pure, raw buffalo milk collected daily at 4 AM. No preservatives added.',
     price: 85,
     unit: '1 Litre',
@@ -29,7 +29,7 @@ const products = [
     type: 'mushroom',
     category: 'Vegetables',
     isSubscriptionAllowed: false,
-    farmSource: "FarmFresh Unit 1",
+    farmSource: "PureDudh Unit 1",
   }
 ];
 
@@ -55,7 +55,7 @@ const seedDB = async () => {
       admin = await User.create({
         phone: adminPhone,
         name: 'Admin User',
-        email: 'admin@farmfresh.com',
+        email: 'admin@puredudh.com',
         role: 'admin'
       });
       console.log('✅ Default Admin created (Phone: 9999999999)');
@@ -91,7 +91,7 @@ const seedDB = async () => {
         key: 'contact_settings',
         value: {
           supportPhone: '+91 8106271906',
-          supportEmail: 'support@farmfresh.com',
+          supportEmail: 'support@puredudh.com',
           officeAddress: 'Champapet, Hyderabad, India',
         }
       }

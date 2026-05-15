@@ -41,7 +41,7 @@ exports.sendOtp = async (req, res, next) => {
     console.log(`[DEV] OTP for ${phone}: ${otp}`);
 
     // TODO: In production, send via Fast2SMS / Twilio here
-    // await smsService.send(phone, `Your FarmFresh OTP is ${otp}. Valid for 5 minutes.`);
+    // await smsService.send(phone, `Your PureDudh OTP is ${otp}. Valid for 5 minutes.`);
 
     res.status(200).json({
       success: true,

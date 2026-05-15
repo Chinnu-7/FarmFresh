@@ -51,7 +51,7 @@ const productSchema = new mongoose.Schema({
   },
   farmSource: {
     type: String,
-    default: 'FarmFresh Partner Farm',
+    default: 'PureDudh Partner Farm',
   },
   packingTime: {
     type: String,
