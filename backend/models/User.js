@@ -42,8 +42,17 @@ const userSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
+// Atomic wallet deduction helper
+userSchema.statics.deductWallet = async function(userId, amount) {
+  const user = await this.findOneAndUpdate(
+    { _id: userId, walletBalance: { $gte: amount } },
+    { $inc: { walletBalance: -amount } },
+    { new: true }
+  );
+  return user;
+};
 
-userSchema.index({ phone: 1 });
+
 userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
 

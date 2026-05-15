@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: FarmFresh Direct API
+  title: PureDudh Direct API
   description: |
-    Complete API documentation for the FarmFresh Direct D2C milk delivery platform.
+    Complete API documentation for the PureDudh Direct D2C milk delivery platform.
     - OTP-based authentication with JWT tokens
     - Product catalog with subscription support
     - Daily inventory management with priority allocation
@@ -10,7 +10,7 @@ info:
     - Admin analytics and demand prediction
   version: 1.0.0
   contact:
-    name: FarmFresh Direct
+    name: PureDudh Direct
 
 servers:
   - url: http://localhost:5000/api
@@ -253,7 +253,7 @@ paths:
                         type: integer
                 paymentMethod:
                   type: string
-                  enum: [cod, razorpay, wallet]
+                  enum: [cod, razorpay, wallet, upi]
                 address:
                   type: object
                   properties:

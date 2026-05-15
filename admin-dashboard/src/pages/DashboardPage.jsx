@@ -40,7 +40,7 @@ export default function DashboardPage() {
     <div>
       <div className="page-header">
         <h2>Dashboard</h2>
-        <p>Overview of FarmFresh Direct operations</p>
+        <p>Overview of PureDudh Direct operations</p>
       </div>
 
       {/* Stat Cards */}

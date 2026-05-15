@@ -19,6 +19,11 @@ const performDailyAllocation = async (date = new Date()) => {
     const fulfilledSubs = [];
 
     for (const sub of subscriptions) {
+      if (!sub.product) {
+        console.warn(`[JOBS] Skipping sub ${sub._id}: Product is missing or deleted`);
+        continue;
+      }
+
       const isSkipping = sub.skipDates.some(
         (d) => startOfDay(new Date(d)).getTime() === targetDate.getTime()
       );
@@ -38,6 +43,13 @@ const performDailyAllocation = async (date = new Date()) => {
       });
 
       if (!existingOrder) {
+        // FIX #BUG: Actually deduct from wallet! 
+        const User = require('../models/User');
+        const totalAmount = sub.product.price * sub.quantityPerDay;
+        const updatedUser = await User.deductWallet(sub.user, totalAmount);
+        
+        const paymentStatus = updatedUser ? 'completed' : 'pending';
+
         await Order.create({
           user: sub.user,
           items: [{
@@ -46,12 +58,16 @@ const performDailyAllocation = async (date = new Date()) => {
             price: sub.product.price,
           }],
           type: 'subscription-fulfillment',
-          totalAmount: sub.product.price * sub.quantityPerDay,
+          totalAmount,
           paymentMethod: 'wallet',
-          paymentStatus: 'completed',
+          paymentStatus,
           deliveryDate: targetDate,
           address: sub.deliveryAddress || {},
         });
+
+        if (!updatedUser) {
+          console.warn(`[JOBS] Subscription order created for user ${sub.user} with PENDING payment due to insufficient balance.`);
+        }
       }
     }
 

@@ -49,7 +49,7 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1>🥛 FarmFresh</h1>
+        <h1>🥛 PureDudh</h1>
         <p className="subtitle">Admin Dashboard Login</p>
 
         {error && (

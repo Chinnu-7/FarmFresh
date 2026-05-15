@@ -109,6 +109,16 @@ exports.createOrder = async (req, res, next) => {
       }
     }
 
+    let paymentStatus = 'pending';
+    if (paymentMethod === 'wallet') {
+      const User = require('../models/User');
+      const updatedUser = await User.deductWallet(req.user._id, totalAmount);
+      if (!updatedUser) {
+        return res.status(400).json({ success: false, message: 'Insufficient wallet balance' });
+      }
+      paymentStatus = 'completed';
+    }
+
     // Create order
     const order = await Order.create({
       user: req.user._id,
@@ -116,7 +126,7 @@ exports.createOrder = async (req, res, next) => {
       type: 'instant',
       totalAmount,
       paymentMethod,
-      paymentStatus: 'pending',
+      paymentStatus,
       deliveryDate: today,
       address,
     });

@@ -13,7 +13,7 @@ export default function DashboardLayout() {
     <div className="app-layout">
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <h1>🥛 FarmFresh</h1>
+          <h1>🥛 PureDudh</h1>
           <p>Admin Dashboard</p>
         </div>
 
@@ -35,6 +35,9 @@ export default function DashboardLayout() {
           </NavLink>
           <NavLink to="/products">
             <span className="icon">🛒</span> Products
+          </NavLink>
+          <NavLink to="/settings">
+            <span className="icon">⚙️</span> Settings
           </NavLink>
         </nav>
 

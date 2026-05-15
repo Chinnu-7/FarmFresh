@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-# FarmFresh Direct — Production-Ready System
+# PureDudh Direct — Production-Ready System
 
 A full-stack, D2C milk delivery system featuring a Mobile App (Expo), Admin Dashboard (React/Vite), and a Robust Backend (Node.js/Express/MongoDB).
 
@@ -33,7 +33,7 @@ A full-stack, D2C milk delivery system featuring a Mobile App (Expo), Admin Dash
 1.  Navigate to `backend/`.
 2.  Install dependencies: `npm install`.
 3.  Create a `.env` file (see `.env.example` if available).
-    *   `MONGO_URI=mongodb://localhost:27017/farmfresh`
+    *   `MONGO_URI=mongodb://localhost:27017/puredudh`
     *   `JWT_SECRET=supersecretkey`
     *   `NODE_ENV=development`
 4.  Seed initial products: `node seeder.js`.
@@ -69,6 +69,6 @@ If VS Code shows a high error count (e.g., 100+):
 3.  Ensure `node_modules` is installed in the `mobile-app` directory.
 4.  The system has been updated to use `.ts` for core libraries and `.tsx` for screens to ensure type safety.
 =======
-# FarmFresh
-App for FarmFresh
+# PureDudh
+App for PureDudh
 >>>>>>> 167ebf25f80a070588ec3faab810b03a88311b40

@@ -23,7 +23,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.ADMIN_URL || 'https://admin.farmfresh.com'] 
+    ? [process.env.ADMIN_URL || 'https://admin.puredudh.com'] 
     : true, // Allow all in development
   credentials: true,
 }));
@@ -35,14 +35,14 @@ app.use('/api', apiLimiter);
 const swaggerDoc = YAML.load(path.join(__dirname, 'swagger.yaml'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc, {
   customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'FarmFresh Direct API Docs',
+  customSiteTitle: 'PureDudh Direct API Docs',
 }));
 
 // Health check
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'FarmFresh Direct API v1.0',
+    message: 'PureDudh Direct API v1.0',
     docs: '/api-docs',
     timestamp: new Date().toISOString(),
   });
@@ -55,6 +55,8 @@ app.use('/api/subscriptions', require('./routes/subscriptionRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/inventory', require('./routes/inventoryRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/config', require('./routes/configRoutes'));
+app.use('/api/payments', require('./routes/paymentRoutes'));
 
 // 404 handler
 app.use((req, res) => {

@@ -4,6 +4,8 @@ const connectDB = require('./config/db');
 const Product = require('./models/Product');
 const DailyInventory = require('./models/DailyInventory');
 const User = require('./models/User');
+const Subscription = require('./models/Subscription');
+const GlobalConfig = require('./models/GlobalConfig');
 const { startOfDay } = require('date-fns');
 
 const seedData = async () => {
@@ -13,8 +15,41 @@ const seedData = async () => {
     // Clear existing data
     await Product.deleteMany();
     await DailyInventory.deleteMany();
+    await Subscription.deleteMany();
+    await GlobalConfig.deleteMany();
 
-    console.log('Cleared existing products and inventory.');
+    console.log('Cleared existing products, inventory, and subscriptions.');
+
+    // Seed Global Config
+    await GlobalConfig.insertMany([
+      {
+        key: 'delivery_settings',
+        value: {
+          slots: ['5 AM - 8 AM', '8 AM - 11 AM'],
+          minOrderValue: 100,
+          freeDeliveryThreshold: 500,
+          deliveryFee: 30,
+        }
+      },
+      {
+        key: 'payment_settings',
+        value: {
+          razorpayEnabled: true,
+          codEnabled: true,
+          walletEnabled: true,
+          minWalletRecharge: 100,
+        }
+      },
+      {
+        key: 'contact_settings',
+        value: {
+          supportPhone: '+91 8106271906',
+          supportEmail: 'support@puredudh.com',
+          officeAddress: 'Champapet, Hyderabad, India',
+        }
+      }
+    ]);
+    console.log('✅ Global configuration seeded');
 
     // Create products
     const products = await Product.insertMany([

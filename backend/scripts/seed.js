@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const Product = require('../models/Product');
 const User = require('../models/User');
 const DailyInventory = require('../models/DailyInventory');
+const Subscription = require('../models/Subscription');
 
 const path = require('path');
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -37,9 +38,10 @@ const seedDB = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('Connected to MongoDB for seeding...');
 
-    // Clear existing data (optional, but good for fresh start)
+    // Clear existing data
     await Product.deleteMany({});
-    // await User.deleteMany({}); // Uncomment if you want to clear users too
+    await Subscription.deleteMany({});
+    // await User.deleteMany({});
     // await DailyInventory.deleteMany({});
 
     // Add Products
@@ -62,6 +64,39 @@ const seedDB = async () => {
       await admin.save();
       console.log('✅ Existing user promoted to Admin');
     }
+
+    // Seed Global Config
+    const GlobalConfig = require('../models/GlobalConfig');
+    await GlobalConfig.deleteMany();
+    await GlobalConfig.insertMany([
+      {
+        key: 'delivery_settings',
+        value: {
+          slots: ['5 AM - 8 AM', '8 AM - 11 AM'],
+          minOrderValue: 100,
+          freeDeliveryThreshold: 500,
+          deliveryFee: 30,
+        }
+      },
+      {
+        key: 'payment_settings',
+        value: {
+          razorpayEnabled: true,
+          codEnabled: true,
+          walletEnabled: true,
+          minWalletRecharge: 100,
+        }
+      },
+      {
+        key: 'contact_settings',
+        value: {
+          supportPhone: '+91 8106271906',
+          supportEmail: 'support@farmfresh.com',
+          officeAddress: 'Champapet, Hyderabad, India',
+        }
+      }
+    ]);
+    console.log('✅ Global configuration seeded');
 
     console.log('Seeding completed! Press Ctrl+C to exit.');
     process.exit();
